@@ -49,8 +49,9 @@ router.post("/new", async (req, res) => {
 router.patch("/:link", async (req, res) => {
     let updates = {
         $set: {
-            body: req.body.desc,
+            body: req.body.body,
             title: req.body.title,
+            tags: req.body.tags,
         }
     }
 

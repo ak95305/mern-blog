@@ -37,27 +37,31 @@ export default function Posts() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     
+    const deletePost = (id) => {
+        fetch(`http://localhost:5050/${id}`, {
+            method: "DELETE",
+        });
+    };
     const getUser = () => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user);
-            }else{
+            } else {
                 navigate("/signin");
             }
         });
     };
-    
-    useEffect(() => {
 
+    useEffect(() => {
         getUser();
 
-        if(user){
+        if (user) {
             blogs(pageNo, 10).then((post) => {
                 setPosts(post.data);
                 setPostCount(post.count);
             });
         }
-    }, [pageNo, user]);
+    }, [pageNo, user, deletePost]);
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -78,9 +82,7 @@ export default function Posts() {
                         </Grid>
                         <Grid item>
                             <Button variant="contained" size="small">
-                                <RLink to="/post/new">
-                                    Add
-                                </RLink>
+                                <RLink to="/post/new">Add</RLink>
                             </Button>
                         </Grid>
                     </Grid>
@@ -112,7 +114,11 @@ export default function Posts() {
                                             {post.title}
                                         </Typography>
                                         <Typography className="line-clamp">
-                                            {post.body}
+                                            <span
+                                                dangerouslySetInnerHTML={{
+                                                    __html: post.body,
+                                                }}
+                                            />
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
@@ -127,15 +133,20 @@ export default function Posts() {
                                             size="small"
                                             variant="outlined"
                                             color="secondary"
-                                        >   
-                                        <RLink to={`/post/${post.permalink}`}>
-                                            Edit
-                                        </RLink>
+                                        >
+                                            <RLink
+                                                to={`/post/${post.permalink}`}
+                                            >
+                                                Edit
+                                            </RLink>
                                         </Button>
                                         <Button
                                             size="small"
                                             variant="outlined"
                                             color="error"
+                                            onClick={() => {
+                                                deletePost(post.permalink);
+                                            }}
                                         >
                                             Delete
                                         </Button>

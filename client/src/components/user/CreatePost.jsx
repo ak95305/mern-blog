@@ -12,23 +12,16 @@ const getPost = async (id) => {
 function CreatePost() {
     const { id } = useParams();
     const navigate = new useNavigate();
-    const [blogData, setBlogData] = useState(null);
-    const [editBlog, setEditBlog] = useState({});
+    const [blogData, setBlogData] = useState({
+        title: "",
+        body: "",
+        tags: [],
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const tagsArr = data.get("tags").split(", ");
-        const newData = {
-            title: data.get("title"),
-            body: data.get("body"),
-            tags: tagsArr,
-        };
-        setBlogData(newData);
-    };
-
-    useEffect(() => {
-        if (blogData != null && id == undefined) {
+        
+        if (id == undefined) {
             fetch("http://localhost:5050/new", {
                 method: "POST",
                 headers: {
@@ -39,24 +32,32 @@ function CreatePost() {
                 window.alert(error);
                 return;
             });
-            navigate("/user/blogs");
-        } 
-        else if (id && blogData != null) {
-            fetch(`http://localhost:5050/${params.id}`, {
+        }
+        
+
+        else if (id) {
+            fetch(`http://localhost:5050/${id}`, {
                 method: "PATCH",
                 body: JSON.stringify(blogData),
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-            navigate("/user/blogs");
         }
-    }, [blogData]);
+        
+        navigate("/user/blogs");
+    };
+
+    console.log(blogData);
 
     useEffect(() => {
         if (id != undefined) {
             getPost(id).then((data) => {
-                setEditBlog(data);
+                setBlogData({
+                    title: data.title,
+                    body: data.body,
+                    tags: data.tags,
+                });
             });
         }
     }, []);
@@ -72,7 +73,7 @@ function CreatePost() {
                 component="h2"
                 sx={{ textAlign: "center", fontWeight: 700 }}
             >
-                {editBlog ? "Edit" : "Create"} Blog
+                {id!=undefined ? "Edit" : "Create"} Blog
             </Typography>
             <TextField
                 id="filled-basic"
@@ -80,8 +81,11 @@ function CreatePost() {
                 variant="filled"
                 sx={{ width: "100%", mt: 2 }}
                 name="title"
-                value={editBlog.title || ""}
-                InputLabelProps={{ shrink: editBlog ? true : false }}
+                value={blogData.title || ""}
+                InputLabelProps={{ shrink: blogData ? true : false }}
+                onChange={(e) =>
+                    setBlogData({ ...blogData, title: e.target.value })
+                }
             />
             <TextField
                 id="filled-textarea"
@@ -92,8 +96,11 @@ function CreatePost() {
                 variant="filled"
                 sx={{ width: "100%", mt: 2 }}
                 name="body"
-                value={editBlog.body || ""}
-                InputLabelProps={{ shrink: editBlog ? true : false }}
+                value={blogData.body || ""}
+                InputLabelProps={{ shrink: blogData ? true : false }}
+                onChange={(e) =>
+                    setBlogData({ ...blogData, body: e.target.value })
+                }
             />
             <TextField
                 id="filled-basic"
@@ -101,8 +108,11 @@ function CreatePost() {
                 variant="filled"
                 sx={{ width: "100%", mt: 2 }}
                 name="tags"
-                value={editBlog.title || ""}
-                InputLabelProps={{ shrink: editBlog ? true : false }}
+                value={blogData.tags.join(", ")}
+                InputLabelProps={{ shrink: blogData ? true : false }}
+                onChange={(e) =>
+                    setBlogData({ ...blogData, tags: e.target.value.split(", ") })
+                }
             />
             <Button
                 variant="contained"
@@ -110,7 +120,7 @@ function CreatePost() {
                 sx={{ mt: 2 }}
                 type="submit"
             >
-                {editBlog ? "Edit" : "Create"}
+                {id!=undefined ? "Edit" : "Create"}
             </Button>
         </form>
     );
