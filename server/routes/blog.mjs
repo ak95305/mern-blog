@@ -1,5 +1,6 @@
 import express from "express";
 import db from "../db/conn.mjs";
+import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
@@ -27,11 +28,11 @@ router.get("/blog/:link", async (req, res) => {
 
 
 // Insert Blog
-router.post("/", async (req, res) => {
+router.post("/new", async (req, res) => {
     let newBlog = {
-        body: req.body.desc,
-        permalink: req.body.permalink,
-        author: req.body.author,
+        body: req.body.body,
+        permalink: req.body.title.replace(/\s+/g, '-').toLowerCase(),
+        author: "Author",
         title: req.body.title,
         tags: req.body.tags,
         comment: [],

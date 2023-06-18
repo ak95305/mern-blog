@@ -10,7 +10,6 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./user/firebase";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useLayoutEffect } from "react";
 
 function Header(props) {
     const { sections, title } = props;
@@ -20,6 +19,7 @@ function Header(props) {
         signOut(auth)
             .then(() => {
                 setUser(null);
+                window.location.href = "/blogs";
             })
             .catch((error) => {
                 console.log(error);
@@ -56,9 +56,23 @@ function Header(props) {
                     <SearchIcon />
                 </IconButton>
                 {user ? (
-                    <Button variant="outlined" size="small" onClick={logOut}>
-                        Logout
-                    </Button>
+                    <div>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={logOut}
+                        >
+                            Logout
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            href="/user/blogs"
+                            sx={{ ml: 1 }}
+                        >
+                            Go to Posts
+                        </Button>
+                    </div>
                 ) : (
                     <Button variant="outlined" size="small" href="/signin">
                         Author Signin

@@ -9,6 +9,8 @@ import AllBlogs from "./AllBlogs";
 import SinglePost from "./SinglePost";
 import SignInSide from "./user/SignIn";
 import Posts from "./user/Posts";
+import CreatePost from "./user/CreatePost";
+
 
 const router = createBrowserRouter([
     {
@@ -31,6 +33,15 @@ const router = createBrowserRouter([
         path: "/user/blogs",
         element: <Posts />,
     },
+    {
+        path: "/post/new",
+        element: <CreatePost />,
+    },
+    {
+        path: "/post/:id",
+        element: <CreatePost />,
+    },
+
 ]);
 
 const sections = [

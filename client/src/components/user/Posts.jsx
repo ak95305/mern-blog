@@ -1,48 +1,63 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
-import CameraIcon from "@mui/icons-material/PhotoCamera";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
+import { Link as RLink, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Pagination } from "@mui/material";
-
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-
 const blogs = async (pageNo = 1, limit = 5) => {
     const post = (
-        await fetch(`http://localhost:5050/blogs?pageno=${pageNo}&limit=${limit}`)
+        await fetch(
+            `http://localhost:5050/blogs?pageno=${pageNo}&limit=${limit}`
+        )
     ).json();
     return post;
 };
+
 
 export default function Posts() {
     const [posts, setPosts] = useState([]);
     const [pageNo, setPageNo] = useState(1);
     const [postCount, setPostCount] = useState(0);
-
-    useEffect(() => {
-        blogs(pageNo, 10).then((post) => {
-            setPosts(post.data);
-            setPostCount(post.count);
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+    
+    const getUser = () => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUser(user);
+            }else{
+                navigate("/signin");
+            }
         });
-    }, [pageNo]);
+    };
+    
+    useEffect(() => {
+
+        getUser();
+
+        if(user){
+            blogs(pageNo, 10).then((post) => {
+                setPosts(post.data);
+                setPostCount(post.count);
+            });
+        }
+    }, [pageNo, user]);
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -57,16 +72,16 @@ export default function Posts() {
                         sx={{ mb: 5 }}
                     >
                         <Grid item>
-                            <Typography
-                                variant="h6"
-                                color="inherit"
-                                noWrap
-                            >
+                            <Typography variant="h6" color="inherit" noWrap>
                                 All Blogs
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <Button variant="contained" size="small">Add</Button>
+                            <Button variant="contained" size="small">
+                                <RLink to="/post/new">
+                                    Add
+                                </RLink>
+                            </Button>
                         </Grid>
                     </Grid>
                     {/* End hero unit */}
@@ -102,7 +117,20 @@ export default function Posts() {
                                     </CardContent>
                                     <CardActions>
                                         <Button size="small" variant="outlined">
-                                            Edtt
+                                            <RLink
+                                                to={`/blog/${post.permalink}`}
+                                            >
+                                                View
+                                            </RLink>
+                                        </Button>
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            color="secondary"
+                                        >   
+                                        <RLink to={`/post/${post.permalink}`}>
+                                            Edit
+                                        </RLink>
                                         </Button>
                                         <Button
                                             size="small"

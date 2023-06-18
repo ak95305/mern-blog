@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router-dom";
 
 const getPost = async (id) => {
     const post = (await fetch(`http://localhost:5050/blog/${id}`)).json();
-
     return post;
 };
 
