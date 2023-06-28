@@ -1,9 +1,10 @@
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import serverURL from "./serverURL";
 
 const getPost = async (id) => {
-    const post = (await fetch(`http://localhost:5050/blog/${id}`)).json();
+    const post = (await fetch(`${serverURL}/blog/${id}`)).json();
     return post;
 };
 

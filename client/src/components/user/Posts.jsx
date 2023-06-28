@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { Pagination } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
+import serverURL from "../serverURL";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
@@ -23,7 +24,7 @@ const defaultTheme = createTheme();
 const blogs = async (pageNo = 1, limit = 5) => {
     const post = (
         await fetch(
-            `http://localhost:5050/blogs?pageno=${pageNo}&limit=${limit}`
+            `${serverURL}/blogs?pageno=${pageNo}&limit=${limit}`
         )
     ).json();
     return post;
@@ -38,7 +39,7 @@ export default function Posts() {
     const navigate = useNavigate();
     
     const deletePost = (id) => {
-        fetch(`http://localhost:5050/${id}`, {
+        fetch(`${serverURL}/${id}`, {
             method: "DELETE",
         });
     };

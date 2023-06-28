@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const getPost = async (id) => {
-    const post = (await fetch(`http://localhost:5050/blog/${id}`)).json();
+    const post = (await fetch(`${serverURL}/blog/${id}`)).json();
     return post;
 };
 
@@ -22,7 +22,7 @@ function CreatePost() {
         e.preventDefault();
         
         if (id == undefined) {
-            fetch("http://localhost:5050/new", {
+            fetch("${serverURL}/new", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -36,7 +36,7 @@ function CreatePost() {
         
 
         else if (id) {
-            fetch(`http://localhost:5050/${id}`, {
+            fetch(`${serverURL}/${id}`, {
                 method: "PATCH",
                 body: JSON.stringify(blogData),
                 headers: {
